@@ -1,0 +1,21 @@
+
+{
+  "name": "fullfillment_system",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "dotenv": "^16.4.5",
+    "mongoose": "^8.5.4",
+    "nodemon": "^3.1.4",
+    "redis": "^4.7.0"
+  }
+}

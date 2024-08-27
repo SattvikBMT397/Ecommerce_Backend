@@ -1,0 +1,94 @@
+version: '3.8'
+
+services:
+  user_auth:
+    build:
+      context: ./User_Auth
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    env_file:
+      - ./User_Auth/src/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      retries: 3
+      start_period: 30s
+      timeout: 10s
+
+  order_system:
+    build:
+      context: ./Order_System
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3000"
+    env_file:
+      - ./Order_System/src/.env
+    depends_on:
+      user_auth:
+        condition: service_healthy
+
+  payment_system:
+    build:
+      context: ./Payment_system
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3000"
+    env_file:
+      - ./Payment_system/src/.env
+    depends_on:
+      order_system:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  fulfillment_service:
+    build:
+      context: ./Fullfillment_system
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3000"
+    env_file:
+      - ./Fullfillment_system/src/.env
+    depends_on:
+      payment_system:
+        condition: service_healthy
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 3
+      start_period: 30s
+      timeout: 5s
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5673:5672"
+      - "15673:15673"
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 10s
+      retries: 3
+      start_period: 30s
+      timeout: 5s
+
+volumes:
+  redis_data:
+  rabbitmq_data:
