@@ -2,12 +2,12 @@ const transporter = require('../config/nodemailer');
 const  serverConfig  = require('../config/server-config');
 const messages = require('../utils/message');
 
-async function sendEmail(to, subject, text) {
+async function sendEmail(to, subject, htmlContent) {
   const mailOptions = {
     from: serverConfig.MAIL,
     to,
     subject,
-    text,
+    html:htmlContent
   };
 
   try {

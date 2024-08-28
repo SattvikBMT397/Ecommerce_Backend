@@ -7,7 +7,7 @@ const enums = require('./utils/enum');
 
   const consumeQueue = (queue) => {
     channel.consume(queue, async (msg) => {
-      if (msg !== null) {
+     
         const messageContent = JSON.parse(msg.content.toString());
         console.log(`Received ${queue} message:`, messageContent);
 
@@ -17,13 +17,11 @@ const enums = require('./utils/enum');
         } catch (err) {
           console.error(`Error processing ${queue} message:`, err);
         }
-      }
     });
   };
 
-  // Start consuming messages from multiple queues
-  consumeQueue(enums.USER_CREATED);
-  consumeQueue(enums.ORDER_CREATED);
-  consumeQueue(enums.PAYMENT_STATUS);
-  consumeQueue(enums.FULFILMENT_STATUS);
+  await consumeQueue(enums.USER_CREATED);
+  await consumeQueue(enums.ORDER_CREATED);
+  await consumeQueue(enums.PAYMENT_STATUS);
+  await consumeQueue(enums.FULFILMENT_STATUS);
 })();

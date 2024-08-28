@@ -1,16 +1,14 @@
-const redisClient = require('../config/redis');
+const redisClient = require('../config/redis'); 
+const messages = require('../utils/message');
 
 async function getEmailFromRedis(userId) {
-  return new Promise((resolve, reject) => {
-    redisClient.get(`user:${userId}:email`, (err, email) => {
-      if (err) {
-        console.error('Error fetching email from Redis:', err);
-        reject(err);
-      } else {
-        resolve(email);
-      }
-    });
-  });
+  try {
+    const email = await redisClient.get(`user:${userId}`);
+    return email;
+  } catch (error) {
+    console.error(`${messages.CACHE_ERROR}: Error retrieving email for user ID ${userId} from Redis`, error);
+    throw error; 
+  }
 }
 
 module.exports = { getEmailFromRedis };

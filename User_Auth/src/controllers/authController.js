@@ -64,7 +64,7 @@ exports.loginUser = async (req, res) => {
 
         
         await redisClient.set(`user:${user.id}`, user.email);
-        await redisClient.set(`auth_token_${user._id}`, token, { EX: 3600 });
+        await redisClient.set(`auth_token_${user._id}`, token, { EX: 36000 });
 
 
         res.status(httpStatus.OK).json({ token });
